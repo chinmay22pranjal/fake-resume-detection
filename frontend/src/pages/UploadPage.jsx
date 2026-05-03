@@ -1,116 +1,33 @@
-import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
-import toast from "react-hot-toast";
+import { motion } from "framer-motion";
 
-export default function UploadPage({ onFileReady }) {
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [loading, setLoading] = useState(false);
-
-  // ✅ File drop handler
-  const onDrop = useCallback((acceptedFiles, rejectedFiles) => {
-    if (rejectedFiles.length > 0) {
-      toast.error("Invalid file type");
-      return;
-    }
-
-    const file = acceptedFiles[0];
-
-    if (file.size > 10 * 1024 * 1024) {
-      toast.error("File too large (Max 10MB)");
-      return;
-    }
-
-    setSelectedFile(file);
-  }, []);
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    multiple: false,
-  });
-
-  // ✅ MAIN ANALYZE FUNCTION
-  const handleAnalyze = async () => {
-    try {
-      if (!selectedFile) return;
-
-      setLoading(true);
-
-      const formData = new FormData();
-      formData.append("file", selectedFile);
-
-      const res = await fetch(
-        "https://fake-resume-detection-4.onrender.com/api/resume/analyze",
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
-
-      // 🔥 ERROR HANDLING
-      if (!res.ok) {
-        const errorText = await res.text();
-        console.log("Backend Error:", errorText);
-        toast.error("Backend Error!");
-        setLoading(false);
-        return;
-      }
-
-      const data = await res.json();
-      console.log("SUCCESS:", data);
-
-      toast.success("Analysis Completed!");
-      onFileReady(data);
-
-    } catch (err) {
-      console.error("ERROR:", err);
-      toast.error("Server not responding!");
-    } finally {
-      setLoading(false);
-    }
-  };
+export default function UploadPage({ onNext }) {
+  const { getRootProps, getInputProps, acceptedFiles } = useDropzone();
 
   return (
-    <div className="flex flex-col items-center gap-6">
+    <div className="flex flex-col items-center justify-center h-screen px-6">
 
-      {/* 🔹 Drop Area */}
-      <div
+      <h1 className="text-4xl font-bold mb-4">
+        Resume AI Detector
+      </h1>
+
+      <motion.div
         {...getRootProps()}
-        className={`border-2 border-dashed rounded-xl p-10 w-full max-w-lg text-center cursor-pointer transition ${
-          isDragActive
-            ? "border-blue-500 bg-blue-50"
-            : "border-gray-300"
-        }`}
+        whileHover={{ scale: 1.05 }}
+        className="glass p-12 w-full max-w-xl text-center border-dashed border-2 cursor-pointer"
       >
         <input {...getInputProps()} />
-        <p className="text-lg">
-          {isDragActive
-            ? "Drop your file here"
-            : "Drag & drop resume or click to upload"}
-        </p>
-        <p className="text-sm text-gray-500 mt-2">
-          PDF, DOCX, TXT (Max 10MB)
-        </p>
-      </div>
+        <p>Drag & Drop Resume</p>
+      </motion.div>
 
-      {/* 🔹 Selected File */}
-      {selectedFile && (
-        <div className="text-sm text-gray-700">
-          Selected: <b>{selectedFile.name}</b>
-        </div>
+      {acceptedFiles[0] && (
+        <button
+          onClick={() => onNext(acceptedFiles[0])}
+          className="mt-6 px-6 py-3 bg-blue-600 rounded-xl"
+        >
+          Analyze Resume
+        </button>
       )}
-
-      {/* 🔹 Analyze Button */}
-      <button
-        onClick={handleAnalyze}
-        disabled={!selectedFile || loading}
-        className={`px-6 py-3 rounded-xl font-semibold text-white transition ${
-          selectedFile
-            ? "bg-blue-500 hover:bg-blue-600"
-            : "bg-gray-400 cursor-not-allowed"
-        }`}
-      >
-        {loading ? "Analyzing..." : "Analyze Resume"}
-      </button>
     </div>
   );
 }
