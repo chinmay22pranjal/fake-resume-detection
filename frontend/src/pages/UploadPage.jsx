@@ -124,13 +124,26 @@ export default function UploadPage({ onFileReady }) {
 
         {/* Analyze Button */}
         <button
-          onClick={() => selectedFile && onFileReady(selectedFile)}
-          disabled={!selectedFile}
-          className={`w-full mt-5 py-4 rounded-xl font-semibold text-lg transition-all duration-200
+          onClick={async () => {
+            if (!selectedFile) return;
+
+             const formData = new FormData();
+             formData.append("file", selectedFile);
+
+               const res = await fetch("https://fake-resume-detection-4.onrender.com/api/resume/analyze", {
+                  method: "POST",
+                  body: formData,
+               });
+
+                 const data = await res.json();
+                 onFileReady(data);
+          }} 
+           disabled={!selectedFile}
+           className={`w-full mt-5 py-4 rounded-xl font-semibold text-lg transition-all duration-200
             ${selectedFile
               ? 'bg-sky-500 hover:bg-sky-600 text-white shadow-lg shadow-sky-200 hover:shadow-sky-300 hover:-translate-y-0.5'
               : 'bg-slate-200 text-slate-400 cursor-not-allowed'
-            }`}
+          }`}
         >
           {selectedFile ? '🔍 Analyze Resume' : 'Select a file to continue'}
         </button>
