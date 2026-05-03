@@ -18,3 +18,15 @@ def root():
 @app.get("/health")
 def health():
     return {"status": "ok"}
+from fastapi import UploadFile, File
+
+@app.post("/api/resume/analyze")
+async def analyze_resume(file: UploadFile = File(...)):
+    content = await file.read()
+
+    return {
+        "filename": file.filename,
+        "size": len(content),
+        "message": "File received successfully",
+        "status": "ok"
+    }
