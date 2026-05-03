@@ -1,0 +1,113 @@
+"""
+report_generator.py
+Generates a downloadable PDF report of the resume verification analysis.
+"""
+
+import io
+from reportlab.lib.pagesizes import A4
+from reportlab.lib import colors
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.units import cm
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, HRFlowable
+from reportlab.lib.enums import TA_CENTER, TA_LEFT
+
+
+VERDICT_COLORS = {
+    "GENUINE": colors.HexColor("#16a34a"),
+    "SUSPICIOUS": colors.HexColor("#d97706"),
+    "FAKE": colors.HexColor("#dc2626"),
+}
+
+
+def generate_pdf_report(analysis: dict, resume_data: dict, linkedin_data: dict) -> bytes:
+    buffer = io.BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=A4, topMargin=1.5*cm, bottomMargin=1.5*cm,
+                            leftMargin=2*cm, rightMargin=2*cm)
+    styles = getSampleStyleSheet()
+    story = []
+
+    # Title
+    title_style = ParagraphStyle("title", parent=styles["Title"], fontSize=22, textColor=colors.HexColor("#1e293b"), spaceAfter=6)
+    story.append(Paragraph("Resume Authenticity Report", title_style))
+    story.append(Paragraph("Fake Resume Detection System — AI + LinkedIn Verification", styles["Normal"]))
+    story.append(Spacer(1, 0.5*cm))
+    story.append(HRFlowable(width="100%", thickness=1, color=colors.HexColor("#e2e8f0")))
+    story.append(Spacer(1, 0.3*cm))
+
+    # Verdict banner
+    verdict = analysis.get("overall_verdict", "UNKNOWN")
+    verdict_color = VERDICT_COLORS.get(verdict, colors.gray)
+    confidence = analysis.get("confidence_score", 0)
+
+    verdict_style = ParagraphStyle("verdict", fontSize=18, textColor=verdict_color, fontName="Helvetica-Bold", alignment=TA_CENTER)
+    story.append(Paragraph(f"Verdict: {verdict}  |  Confidence: {confidence}%", verdict_style))
+    story.append(Spacer(1, 0.4*cm))
+
+    # Candidate info
+    story.append(Paragraph("Candidate Information", styles["Heading2"]))
+    candidate_name = resume_data.get("full_name", "N/A")
+    email = resume_data.get("email", "N/A")
+    story.append(Paragraph(f"<b>Name:</b> {candidate_name}", styles["Normal"]))
+    story.append(Paragraph(f"<b>Email:</b> {email}", styles["Normal"]))
+    story.append(Paragraph(f"<b>Current Title:</b> {resume_data.get('current_title', 'N/A')}", styles["Normal"]))
+    story.append(Paragraph(f"<b>Current Company:</b> {resume_data.get('current_company', 'N/A')}", styles["Normal"]))
+    story.append(Spacer(1, 0.4*cm))
+
+    # Summary
+    story.append(Paragraph("AI Analysis Summary", styles["Heading2"]))
+    story.append(Paragraph(analysis.get("summary", "No summary available."), styles["Normal"]))
+    story.append(Spacer(1, 0.4*cm))
+
+    # Verification checks table
+    story.append(Paragraph("Field-by-Field Verification", styles["Heading2"]))
+    checks = analysis.get("checks", [])
+    if checks:
+        table_data = [["Field", "Resume Says", "LinkedIn Shows", "Match", "Severity"]]
+        for check in checks:
+            match_symbol = "✓" if check.get("match") else "✗"
+            severity = check.get("severity", "low").upper()
+            table_data.append([
+                check.get("field", ""),
+                str(check.get("resume_value", ""))[:40],
+                str(check.get("linkedin_value", ""))[:40],
+                match_symbol,
+                severity
+            ])
+        t = Table(table_data, colWidths=[3.5*cm, 4.5*cm, 4.5*cm, 1.5*cm, 2*cm])
+        t.setStyle(TableStyle([
+            ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#1e293b")),
+            ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
+            ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+            ("FONTSIZE", (0, 0), (-1, -1), 9),
+            ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.white, colors.HexColor("#f8fafc")]),
+            ("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#e2e8f0")),
+            ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+            ("PADDING", (0, 0), (-1, -1), 6),
+        ]))
+        story.append(t)
+    story.append(Spacer(1, 0.4*cm))
+
+    # Red flags
+    red_flags = analysis.get("red_flags", [])
+    if red_flags:
+        story.append(Paragraph("Red Flags Detected", styles["Heading2"]))
+        for flag in red_flags:
+            story.append(Paragraph(f"• {flag}", ParagraphStyle("rf", parent=styles["Normal"], textColor=colors.HexColor("#dc2626"), leftIndent=10)))
+        story.append(Spacer(1, 0.3*cm))
+
+    # Positive signals
+    positives = analysis.get("positive_signals", [])
+    if positives:
+        story.append(Paragraph("Positive Signals", styles["Heading2"]))
+        for pos in positives:
+            story.append(Paragraph(f"• {pos}", ParagraphStyle("ps", parent=styles["Normal"], textColor=colors.HexColor("#16a34a"), leftIndent=10)))
+        story.append(Spacer(1, 0.3*cm))
+
+    # Footer
+    story.append(HRFlowable(width="100%", thickness=0.5, color=colors.HexColor("#e2e8f0")))
+    story.append(Spacer(1, 0.2*cm))
+    story.append(Paragraph("Generated by Fake Resume Detector — AI + LinkedIn Verification System", ParagraphStyle("footer", parent=styles["Normal"], fontSize=8, textColor=colors.gray, alignment=TA_CENTER)))
+
+    doc.build(story)
+    buffer.seek(0)
+    return buffer.read()
