@@ -1,29 +1,34 @@
-from fastapi import FastAPI, UploadFile, File
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-app = FastAPI()
+# Import router
+from routers.analyze import router as analyze_router
 
+# Create app
+app = FastAPI(title="Fake Resume Detection API")
+
+# Enable CORS (VERY IMPORTANT for frontend)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["*"],   # Allow all (you can restrict later)
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+# Include routes
+app.include_router(analyze_router)
+
+# Root endpoint
 @app.get("/")
 def root():
-    return {"message": "Backend Running"}
+    return {
+        "message": "Backend Running Successfully 🚀"
+    }
 
+# Health check (for Render)
 @app.get("/health")
 def health():
-    return {"status": "ok"}
-
-# 🔥 THIS IS THE IMPORTANT API
-@app.post("/api/resume/analyze")
-async def analyze_resume(file: UploadFile = File(...)):
     return {
-        "success": True,
-        "filename": file.filename,
-        "message": "Analysis working!"
+        "status": "ok"
     }
