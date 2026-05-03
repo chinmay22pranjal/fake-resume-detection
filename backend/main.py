@@ -1,34 +1,18 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from routers import analyze
 
-# Import router
-from routers.analyze import router as analyze_router
+app = FastAPI()
 
-# Create app
-app = FastAPI(title="Fake Resume Detection API")
-
-# Enable CORS (VERY IMPORTANT for frontend)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],   # Allow all (you can restrict later)
-    allow_credentials=True,
+    allow_origins=["*"],
     allow_methods=["*"],
-    allow_headers=["*"],
+    allow_headers=["*"]
 )
 
-# Include routes
-app.include_router(analyze_router)
+app.include_router(analyze.router, prefix="/api/resume")
 
-# Root endpoint
 @app.get("/")
-def root():
-    return {
-        "message": "Backend Running Successfully 🚀"
-    }
-
-# Health check (for Render)
-@app.get("/health")
-def health():
-    return {
-        "status": "ok"
-    }
+def home():
+    return {"msg": "API Running"}
