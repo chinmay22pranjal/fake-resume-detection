@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
@@ -18,15 +18,12 @@ def root():
 @app.get("/health")
 def health():
     return {"status": "ok"}
-from fastapi import UploadFile, File
 
+# 🔥 THIS IS THE IMPORTANT API
 @app.post("/api/resume/analyze")
 async def analyze_resume(file: UploadFile = File(...)):
-    content = await file.read()
-
     return {
+        "success": True,
         "filename": file.filename,
-        "size": len(content),
-        "message": "File received successfully",
-        "status": "ok"
+        "message": "Analysis working!"
     }
