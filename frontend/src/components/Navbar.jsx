@@ -1,132 +1,200 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import {
+  FiMenu,
+  FiX,
+  FiBell,
+  FiSearch,
+  FiUser,
+  FiSun,
+  FiMoon,
+  FiChevronDown,
+} from "react-icons/fi";
 
+/* =========================
+   🔔 NOTIFICATIONS DATA
+========================= */
+const dummyNotifications = [
+  "Resume analyzed successfully",
+  "ATS score improved",
+  "New feature added 🚀",
+];
+
+/* =========================
+   🧠 NAV LINKS
+========================= */
+const navLinks = [
+  { name: "Dashboard" },
+  { name: "Upload" },
+  { name: "Results" },
+  { name: "Pricing" },
+];
+
+/* =========================
+   🎯 NAVBAR COMPONENT
+========================= */
 export default function Navbar() {
-  const [isOpen, setIsOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [notifOpen, setNotifOpen] = useState(false);
+  const [theme, setTheme] = useState("dark");
   const [scrolled, setScrolled] = useState(false);
-  const [darkMode, setDarkMode] = useState(true);
 
-  // Handle scroll effect
+  /* 🔄 SCROLL EFFECT */
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
     };
-
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Toggle theme
+  /* 🌙 THEME TOGGLE */
   const toggleTheme = () => {
-    setDarkMode(!darkMode);
-    document.body.classList.toggle("bg-white");
-    document.body.classList.toggle("text-black");
+    setTheme(theme === "dark" ? "light" : "dark");
+    document.documentElement.classList.toggle("dark");
   };
-
-  const navItems = [
-    { name: "Home", href: "#" },
-    { name: "Features", href: "#" },
-    { name: "Dashboard", href: "#" },
-    { name: "Contact", href: "#" },
-  ];
 
   return (
     <>
-      {/* NAVBAR */}
-      <motion.nav
-        initial={{ y: -80 }}
-        animate={{ y: 0 }}
-        transition={{ duration: 0.5 }}
-        className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
+      {/* 🔝 MAIN NAVBAR */}
+      <nav
+        className={`fixed w-full z-50 transition-all duration-300 ${
           scrolled
-            ? "bg-black/70 backdrop-blur-xl shadow-lg"
+            ? "bg-white/10 backdrop-blur-xl shadow-lg border-b border-white/10"
             : "bg-transparent"
         }`}
       >
-        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+        <div className="flex justify-between items-center px-6 py-4">
 
-          {/* LOGO */}
-          <div className="flex items-center gap-2">
-            <span className="text-2xl">🚀</span>
-            <h1 className="text-xl font-bold tracking-wide text-white">
-              ResumeVerify
-            </h1>
-          </div>
+          {/* 🧠 LOGO */}
+          <h1 className="text-xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+            ResumeVerify AI
+          </h1>
 
-          {/* DESKTOP MENU */}
-          <div className="hidden md:flex gap-8 items-center">
-            {navItems.map((item, i) => (
-              <a
+          {/* 📌 DESKTOP LINKS */}
+          <div className="hidden md:flex items-center gap-6">
+            {navLinks.map((link, i) => (
+              <motion.a
                 key={i}
-                href={item.href}
-                className="relative text-gray-300 hover:text-white transition"
+                whileHover={{ scale: 1.1 }}
+                className="cursor-pointer text-gray-300 hover:text-white transition"
               >
-                {item.name}
-
-                {/* underline animation */}
-                <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-blue-500 transition-all duration-300 hover:w-full"></span>
-              </a>
+                {link.name}
+              </motion.a>
             ))}
           </div>
 
-          {/* RIGHT ACTIONS */}
+          {/* 🔍 SEARCH */}
+          <div className="hidden md:flex items-center bg-white/10 px-3 py-2 rounded-xl backdrop-blur-xl">
+            <FiSearch />
+            <input
+              type="text"
+              placeholder="Search..."
+              className="bg-transparent ml-2 outline-none text-sm"
+            />
+          </div>
+
+          {/* 🔔 ICONS */}
           <div className="flex items-center gap-4">
 
-            {/* THEME TOGGLE */}
-            <button
-              onClick={toggleTheme}
-              className="px-3 py-1 bg-white/10 rounded-lg hover:bg-white/20 transition"
-            >
-              {darkMode ? "🌙" : "☀️"}
+            {/* THEME */}
+            <button onClick={toggleTheme}>
+              {theme === "dark" ? <FiSun /> : <FiMoon />}
             </button>
 
-            {/* CTA BUTTON */}
-            <button className="hidden md:block px-5 py-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl shadow-lg hover:scale-105 transition">
-              Get Started
-            </button>
+            {/* NOTIFICATION */}
+            <div className="relative">
+              <FiBell
+                className="cursor-pointer"
+                onClick={() => setNotifOpen(!notifOpen)}
+              />
 
-            {/* MOBILE MENU BUTTON */}
+              <AnimatePresence>
+                {notifOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                    className="absolute right-0 mt-3 w-64 bg-white/10 backdrop-blur-xl rounded-xl border border-white/20 p-4"
+                  >
+                    {dummyNotifications.map((n, i) => (
+                      <p key={i} className="text-sm mb-2">
+                        {n}
+                      </p>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* PROFILE */}
+            <div className="relative">
+              <div
+                onClick={() => setProfileOpen(!profileOpen)}
+                className="flex items-center gap-2 cursor-pointer"
+              >
+                <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                  <FiUser />
+                </div>
+                <FiChevronDown size={14} />
+              </div>
+
+              <AnimatePresence>
+                {profileOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                    className="absolute right-0 mt-3 w-40 bg-white/10 backdrop-blur-xl rounded-xl border border-white/20"
+                  >
+                    <p className="px-4 py-2 hover:bg-white/20 cursor-pointer">
+                      Profile
+                    </p>
+                    <p className="px-4 py-2 hover:bg-white/20 cursor-pointer">
+                      Settings
+                    </p>
+                    <p className="px-4 py-2 text-red-400 hover:bg-white/20 cursor-pointer">
+                      Logout
+                    </p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* 📱 MOBILE MENU */}
             <button
-              className="md:hidden text-white"
-              onClick={() => setIsOpen(!isOpen)}
+              className="md:hidden"
+              onClick={() => setMobileOpen(!mobileOpen)}
             >
-              ☰
+              {mobileOpen ? <FiX size={22} /> : <FiMenu size={22} />}
             </button>
           </div>
         </div>
-      </motion.nav>
+      </nav>
 
-      {/* MOBILE MENU */}
+      {/* 📱 MOBILE DRAWER */}
       <AnimatePresence>
-        {isOpen && (
+        {mobileOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="fixed top-16 left-0 w-full bg-black/90 backdrop-blur-xl p-6 z-40"
+            initial={{ x: "100%" }}
+            animate={{ x: 0 }}
+            exit={{ x: "100%" }}
+            className="fixed top-0 right-0 w-64 h-full bg-[#020617] p-6 z-50"
           >
-            <div className="flex flex-col gap-6 text-center">
-              {navItems.map((item, i) => (
-                <a
-                  key={i}
-                  href={item.href}
-                  className="text-lg text-gray-300 hover:text-white transition"
-                  onClick={() => setIsOpen(false)}
-                >
-                  {item.name}
-                </a>
-              ))}
+            <h2 className="text-lg font-bold mb-6">Menu</h2>
 
-              <button className="mt-4 px-5 py-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl">
-                Get Started
-              </button>
-            </div>
+            {navLinks.map((link, i) => (
+              <p
+                key={i}
+                className="mb-4 text-gray-300 hover:text-white cursor-pointer"
+              >
+                {link.name}
+              </p>
+            ))}
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* SPACER */}
-      <div className="h-20"></div>
     </>
   );
 }
