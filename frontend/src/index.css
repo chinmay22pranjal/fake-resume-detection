@@ -2,10 +2,90 @@
 @tailwind components;
 @tailwind utilities;
 
+/* 🌌 GLOBAL STYLES */
 body {
-  @apply bg-gradient-to-br from-slate-900 via-slate-800 to-black text-white;
+  font-family: 'Inter', sans-serif;
+  background: radial-gradient(circle at top, #0f172a, #020617);
+  color: white;
+  overflow-x: hidden;
 }
 
+/* 🔥 SCROLLBAR */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(#6366f1, #8b5cf6);
+  border-radius: 10px;
+}
+
+/* 💎 GLASS COMPONENT */
 .glass {
-  @apply bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl shadow-lg;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* ✨ GLOW EFFECT */
+.glow {
+  box-shadow: 0 0 20px rgba(99, 102, 241, 0.5);
+}
+
+/* 🎯 BUTTON STYLE */
+.btn-primary {
+  @apply px-6 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 shadow-lg transition-all duration-300;
+}
+
+.btn-primary:hover {
+  transform: scale(1.05);
+}
+
+/* 🎨 CARD STYLE */
+.card {
+  @apply glass p-6 rounded-2xl shadow-lg;
+}
+
+/* 🔥 ANIMATIONS */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.float {
+  animation: float 4s ease-in-out infinite;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.fade-in {
+  animation: fadeIn 0.6s ease-in-out;
+}
+
+/* 🌟 TEXT GRADIENT */
+.text-gradient {
+  background: linear-gradient(to right, #60a5fa, #a78bfa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* 🔮 BACKGROUND GLOW ORBS */
+.bg-orb {
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  filter: blur(120px);
+  opacity: 0.3;
+}
+
+/* RESPONSIVE FIXES */
+@media (max-width: 768px) {
+  body {
+    font-size: 14px;
+  }
 }
