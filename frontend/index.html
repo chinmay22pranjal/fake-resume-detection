@@ -1,21 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>ResumeVerify AI</title>
+    <!-- 🔥 SEO -->
+    <title>ResumeVerify AI 🚀</title>
+    <meta name="description" content="AI Resume Analyzer with ATS + LinkedIn verification" />
 
-  <!-- Google Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <!-- 🌟 Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700;900&display=swap" rel="stylesheet" />
 
-</head>
+    <!-- 💎 Preloader Style -->
+    <style>
+      body {
+        margin: 0;
+        font-family: 'Poppins', sans-serif;
+        background: #020617;
+      }
 
-<body class="bg-black text-white">
+      #loader {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: linear-gradient(135deg, #020617, #1e3a8a);
+        z-index: 9999;
+      }
 
-  <div id="root"></div>
+      .spinner {
+        width: 60px;
+        height: 60px;
+        border: 5px solid rgba(255,255,255,0.2);
+        border-top: 5px solid #3b82f6;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
 
-  <script type="module" src="/src/main.jsx"></script>
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+    </style>
+  </head>
 
-</body>
+  <body>
+    <!-- 🔥 Loader -->
+    <div id="loader">
+      <div class="spinner"></div>
+    </div>
+
+    <!-- ⚡ React Root -->
+    <div id="root"></div>
+
+    <script>
+      window.addEventListener("load", () => {
+        document.getElementById("loader").style.display = "none";
+      });
+    </script>
+
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
 </html>
