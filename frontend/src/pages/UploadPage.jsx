@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-
+import DragDropUpload from "../components/DragDropUpload";
 const HERO_IMG = "https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=800&q=80";
 const BRAIN_IMG = "https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=600&q=80";
 const VERIFY_IMG = "https://images.unsplash.com/photo-1554224154-26032ffc0d07?w=600&q=80";
