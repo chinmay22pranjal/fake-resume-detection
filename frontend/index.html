@@ -2,64 +2,14 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <!-- 🔥 SEO -->
-    <title>ResumeVerify AI 🚀</title>
-    <meta name="description" content="AI Resume Analyzer with ATS + LinkedIn verification" />
-
-    <!-- 🌟 Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700;900&display=swap" rel="stylesheet" />
-
-    <!-- 💎 Preloader Style -->
-    <style>
-      body {
-        margin: 0;
-        font-family: 'Poppins', sans-serif;
-        background: #020617;
-      }
-
-      #loader {
-        position: fixed;
-        inset: 0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        background: linear-gradient(135deg, #020617, #1e3a8a);
-        z-index: 9999;
-      }
-
-      .spinner {
-        width: 60px;
-        height: 60px;
-        border: 5px solid rgba(255,255,255,0.2);
-        border-top: 5px solid #3b82f6;
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-      }
-
-      @keyframes spin {
-        to { transform: rotate(360deg); }
-      }
-    </style>
+    <meta name="description" content="ResumeGuard — AI-Powered Fake Resume Detection using LinkedIn. Catch hiring fraud in under 2 seconds." />
+    <meta name="theme-color" content="#0a84ff" />
+    <title>ResumeGuard — AI Fake Resume Detection</title>
   </head>
-
   <body>
-    <!-- 🔥 Loader -->
-    <div id="loader">
-      <div class="spinner"></div>
-    </div>
-
-    <!-- ⚡ React Root -->
     <div id="root"></div>
-
-    <script>
-      window.addEventListener("load", () => {
-        document.getElementById("loader").style.display = "none";
-      });
-    </script>
-
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
